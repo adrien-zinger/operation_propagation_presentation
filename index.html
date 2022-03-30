@@ -57,33 +57,34 @@
 				<img src="reminder.svg" />
 			</section>
 			<section>
-				<h2>What we want to solve?</h2>
-				<small>
-					<ul>
-						<li>Limit the number of big data transfert</li>
-						<li>Ask the minimum times a full operation</li>
-					</ul>
-				</small>
-			</section>
-			<section>
-				<h2>Original algorithm</h2>
-				<small>
-					Designed by <b>Sebastion Forestier</b> in the <a
-						href="https://github.com/massalabs/massa/issues/2283#issuecomment-1040872779">original
-						issue</a>
-					<br />
-					<ul>
-						<li style="font-size: 18px;">Dismiss already received
-							operations
-						</li>
-						<li style="font-size: 18px;">Ask only once each node for an
-							operation
-							id</li>
-						<li style="font-size: 18px;">Re-ask only after
-							op_batch_proc_period</li>
-					</ul>
-				</small>
-				<pre><code class="python" data-trim>
+				<section>
+					<h2>What we want to solve?</h2>
+					<small>
+						<ul>
+							<li>Limit the number of big data transfert</li>
+							<li>Ask the minimum times a full operation</li>
+						</ul>
+					</small>
+				</section>
+				<section>
+					<h2>Original algorithm</h2>
+					<small>
+						Designed by <b>Sebastion Forestier</b> in the <a
+							href="https://github.com/massalabs/massa/issues/2283#issuecomment-1040872779">original
+							issue</a>
+						<br />
+						<ul>
+							<li style="font-size: 18px;">Dismiss already received
+								operations
+							</li>
+							<li style="font-size: 18px;">Ask only once each node for an
+								operation
+								id</li>
+							<li style="font-size: 18px;">Re-ask only after
+								op_batch_proc_period</li>
+						</ul>
+					</small>
+					<pre><code class="python" data-trim>
 					def process_op_batch(op_batch, node_id):
 						ask_set = void HashSet[OperationId]
 						future_set = void HashSet[OperationId]
@@ -100,16 +101,16 @@
 							op_batch_buf.push(now+op_batch_proc_period, node_id, future_set)
 						ask ask_set to node_id
 				</code></pre>
-			</section>
-			<section>
-				<h2>When do we dismiss an operations</h2>
-				<small>
-					<ul>
-						<li>If we already received the full operation</li>
-						<li>If we already asked AND we asked to a node</li>
-					</ul>
-				</small>
-				<pre><code class="python" data-trim>
+				</section>
+				<section>
+					<h2>When do we dismiss an operations</h2>
+					<small>
+						<ul>
+							<li>If we already received the full operation</li>
+							<li>If we already asked AND we asked to a node</li>
+						</ul>
+					</small>
+					<pre><code class="python" data-trim>
 						if not is_op_received(op_id):
 							if (op_id not in asked_ops) or (node_id not in asked_ops(op_id)[1]):
 								if (op_id not in asked_ops) or (asked_ops(op_id)[0] &#12296; now - op_batch_proc_period:
@@ -123,20 +124,21 @@
 						else:
 							pass
 				</code></pre>
-			</section>
-			<section>
-				<h2>Operation received in rust</h2>
-				<small>We use the <i>checked_operations</i> parameter that store operations signature check in cache to
-					know if we received the full operation</small>
-				<pre><code class="rust" data-trim>
+				</section>
+				<section>
+					<h2>Operation received in rust</h2>
+					<small>We use the <i>checked_operations</i> parameter that store operations signature check in cache
+						to
+						know if we received the full operation</small>
+					<pre><code class="rust" data-trim>
 					if self.checked_operations.contains(&op_id) {
 						continue;
 					}
 				</code></pre>
-			</section>
-			<section>
-				<h2>When we ask?</h2>
-				<pre><code class="python" data-trim>
+				</section>
+				<section>
+					<h2>When we ask?</h2>
+					<pre><code class="python" data-trim>
 						# Fill future_set and ask_set
 						if (op_id not in asked_ops) or (asked_ops(op_id)[0] &#12296; now - op_batch_proc_period:
 							ask_set.add(op_id)
@@ -151,13 +153,13 @@
 							op_batch_buf.push(now+op_batch_proc_period, node_id, future_set)
 						ask ask_set to node_id
 					</code></pre>
-				<small>An ask_set local variable that contain all the operation_id
-					we want to ask <b>NOW</b>.</small>
-				<small>A future_set that symbolise a batch that we will reprocess <b>LATER</b>.</small>
-			</section>
-			<section>
-				<h2>When we re-ask?</h2>
-				<pre><code class="rust" data-trim>
+					<small>An ask_set local variable that contain all the operation_id
+						we want to ask <b>NOW</b>.</small>
+					<small>A future_set that symbolise a batch that we will reprocess <b>LATER</b>.</small>
+				</section>
+				<section>
+					<h2>When we re-ask?</h2>
+					<pre><code class="rust" data-trim>
 					// Internal triger of the `process_op_batch`
 					while !self.op_batch_buffer.is_empty()
 						&& now >= self.op_batch_buffer.front().unwrap().instant
@@ -170,6 +172,7 @@
 						.await?;
 					}
 				</code></pre>
+				</section>
 			</section>
 			<section>
 				<h2>Corner case</h2>
