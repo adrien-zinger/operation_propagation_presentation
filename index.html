@@ -175,8 +175,26 @@
 				</section>
 			</section>
 			<section>
-				<h2>Corner case</h2>
-				<img src="gant.svg" />
+				<section>
+					<h2>New configurations</h2>
+					<pre><code class="toml" data-trim>
+					[protocol]
+						...
+						# Maximum number of batches in the memory buffer.
+						# Dismiss the new batches if overflow
+						operation_batch_buffer_capacity = 10024 
+						# Start processing batches in the buffer each `operation_batch_proc_period` in millisecond
+						operation_batch_proc_period = 500
+						# All operations asked are prune each `operation_asked_pruning_period` millisecond
+						asked_operations_pruning_period = 100000
+						# Max number of operation per message, same as network param but can be smaller
+						max_operations_per_message = 1024
+					</code></pre>
+				</section>
+				<section>
+					<h2>Corner case</h2>
+					<img src="gant.svg" />
+				</section>
 			</section>
 			<section>
 				<h2>Nexts steps</h2>
